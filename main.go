@@ -27,6 +27,14 @@ func main() {
 
 	fmt.Println("Config loaded!")
 
+	fmt.Println("Loading database ...")
+	db := utils.SetupDatabase()
+	if db != true {
+		log.Fatal("Loading database failed!")
+	}
+
+	fmt.Println("Database loaded!")
+
 	fmt.Println("Connecting to server ...")
 
 	c, err := client.DialTLS(config.MailHost+":"+config.MailPort, nil)
@@ -52,22 +60,12 @@ func main() {
 		log.Fatal(fmt.Sprintf("Cant retrieve the mail folder, err was: %s", err))
 	}
 
-	// Get messages.
-	// This only fetches the latest 4 messages.
-	// @todo: How to do this more generic?
-	from := uint32(1)
-	to := mbox.Messages
-	if mbox.Messages > 3 {
-		// We're using unsigned integers here, only substract if the result is > 0
-		from = mbox.Messages - 3
-	}
-
+	// Get ALL messages.
 	seqset := new(imap.SeqSet)
-	seqset.AddRange(from, to)
-
+	seqset.AddRange(1, mbox.Messages)
 	section := &imap.BodySectionName{}
 
-	messages := make(chan *imap.Message, from)
+	messages := make(chan *imap.Message, mbox.Messages)
 	done := make(chan error, 1)
 
 	// Fetch the message with go routines.
@@ -75,6 +73,9 @@ func main() {
 		done <- c.Fetch(seqset, []imap.FetchItem{section.FetchItem()}, messages)
 	}()
 
+	// @todo: Grab each message id (msg.Uid) save it to some database and then
+	// when we loop through messages make sure that we only process each message
+	// once.
 	for msg := range messages {
 		// Create a new mail reader
 		mr, err := mail.CreateReader(msg.GetBody(section))
@@ -94,6 +95,9 @@ func main() {
 
 			switch h := p.Header.(type) {
 			case *mail.AttachmentHeader:
+				// log the message in database.
+				utils.InsertMail(config.MailFolder, msg.Uid)
+
 				filename, _ := h.Filename()
 				fmt.Println(fmt.Sprintf("Saving attachment: %s", filename))
 				b, _ := ioutil.ReadAll(p.Body)
