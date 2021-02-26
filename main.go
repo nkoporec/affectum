@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os/user"
+	"path/filepath"
 
 	"github.com/emersion/go-message/mail"
 
@@ -70,13 +71,15 @@ func main() {
 
 	// Fetch the message with go routines.
 	go func() {
-		done <- c.Fetch(seqset, []imap.FetchItem{section.FetchItem()}, messages)
+		done <- c.Fetch(seqset, []imap.FetchItem{section.FetchItem(), imap.FetchUid}, messages)
 	}()
 
-	// @todo: Grab each message id (msg.Uid) save it to some database and then
-	// when we loop through messages make sure that we only process each message
-	// once.
 	for msg := range messages {
+		// Don't process old mails.
+		if utils.MailExists(config.MailFolder, msg.Uid) == true {
+			continue
+		}
+
 		// Create a new mail reader
 		mr, err := mail.CreateReader(msg.GetBody(section))
 		if err != nil {
@@ -101,7 +104,14 @@ func main() {
 				filename, _ := h.Filename()
 				fmt.Println(fmt.Sprintf("Saving attachment: %s", filename))
 				b, _ := ioutil.ReadAll(p.Body)
-				err := ioutil.WriteFile(filename, b, 0777)
+
+				attachmentFolder := config.AttachmentFolderPath
+				if attachmentFolder == "" {
+					attachmentFolder = filepath.Join(usr.HomeDir, "/affectum/files")
+				}
+
+				attachment := filepath.Join(attachmentFolder, filename)
+				err := ioutil.WriteFile(attachment, b, 0777)
 
 				if err != nil {
 					log.Println("Error while trying to save attachment: ", err)

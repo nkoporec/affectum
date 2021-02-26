@@ -34,6 +34,7 @@ func SetupDatabase() bool {
 	if _, err := os.Stat(affectumDir); err != nil {
 		if os.IsNotExist(err) {
 			os.Mkdir(affectumDir, 0755)
+			os.Mkdir(filepath.Join(affectumDir, "files"), 0755)
 		}
 	}
 
@@ -88,4 +89,24 @@ func InsertMail(folder string, mid uint32) {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+}
+
+func MailExists(folder string, mid uint32) bool {
+	var output string
+	db := GetDatabase()
+	defer db.Close()
+
+	query, err := db.Prepare(`SELECT count(mid) FROM affectum WHERE folder= ? AND mid= ? ORDER BY mid`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer query.Close()
+
+	err = query.QueryRow(folder, mid).Scan(&output)
+
+	if output == "0" {
+		return false
+	}
+
+	return true
 }
