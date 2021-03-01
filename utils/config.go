@@ -1,6 +1,8 @@
 package utils
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	MailHost             string `mapstructure:"MAIL_HOST"`

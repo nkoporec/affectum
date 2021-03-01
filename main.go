@@ -1,12 +1,8 @@
 package main
 
 import (
-	"fmt"
-
 	"time"
-
 	"github.com/nkoporec/affectum/utils"
-
 	"github.com/getlantern/systray"
 	"github.com/getlantern/systray/example/icon"
 )
@@ -14,7 +10,7 @@ import (
 func main() {
 	// Start the systray.
 	onExit := func() {
-		fmt.Println("Stopped!")
+		utils.Logger("Affectum stopped!")
 	}
 	
 	systray.Run(onReady, onExit)
@@ -33,11 +29,14 @@ func onReady() {
 	systray.SetTooltip("Affectum")
 	mQuitOrig := systray.AddMenuItem("Quit", "Quit the whole app")
 
+	// Set up the dir if needed.
+	utils.CreateDir()
+
 	go func() {
 		go executeScanMailJob()
 
 		<-mQuitOrig.ClickedCh
-		fmt.Println("Requesting quit")
+		utils.Logger("Requesting quit")
 		systray.Quit()
 	}()
 }

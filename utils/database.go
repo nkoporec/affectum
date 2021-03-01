@@ -30,14 +30,8 @@ func SetupDatabase() bool {
 		log.Fatal(fmt.Sprintf("Can't retrieve current user, error was: %s", err))
 	}
 
+	// @todo: merge with CreateDir().
 	affectumDir := filepath.Join(usr.HomeDir, "/affectum")
-	if _, err := os.Stat(affectumDir); err != nil {
-		if os.IsNotExist(err) {
-			os.Mkdir(affectumDir, 0755)
-			os.Mkdir(filepath.Join(affectumDir, "files"), 0755)
-		}
-	}
-
 	database := filepath.Join(affectumDir, "affectum.sql")
 	if _, err := os.Stat(database); err != nil {
 		if os.IsNotExist(err) {

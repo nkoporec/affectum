@@ -18,47 +18,52 @@ import (
 func ScanMail() bool {
 	usr, err := user.Current()
 
-	fmt.Println("Loading config ...")
+	Logger("Loading config ...")
 
 	config, err := LoadConfig(usr.HomeDir)
 	if err != nil {
-		log.Fatal("Can't load config")
+		Logger("Can't load config")
+		log.Fatal("")
 	}
 
-	fmt.Println("Config loaded!")
+	Logger("Config loaded!")
 
-	fmt.Println("Loading database ...")
+	Logger("Loading database ...")
 	db := SetupDatabase()
 	if db != true {
-		log.Fatal("Loading database failed!")
+		Logger("Loading database failed!")
+		log.Fatal("")
 	}
 
-	fmt.Println("Database loaded!")
+	Logger("Database loaded!")
 
-	fmt.Println("Connecting to server ...")
+	Logger("Connecting to server ...")
 
 	c, err := client.DialTLS(config.MailHost+":"+config.MailPort, nil)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Can't connected to server, error is: %s", err))
+		Logger(fmt.Sprintf("Can't connected to server, error is: %s", err))
+		log.Fatal()
 	}
 
-	fmt.Println("Connected")
+	Logger("Connected")
 
 	defer c.Logout()
 
 	// Login
-	fmt.Println("Logging in ...")
+	Logger("Logging in ...")
 	err = c.Login(config.MailUsername, config.MailPassword)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Can't login to server, error is: %s", err))
+		Logger(fmt.Sprintf("Can't login to server, error is: %s", err))
 	}
-	log.Println("Logged in")
+	Logger("Logged in!")
 
 	// Select INBOX
 	mbox, err := c.Select(config.MailFolder, false)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Cant retrieve the mail folder, err was: %s", err))
+		Logger(fmt.Sprintf("Cant retrieve the mail folder, err was: %s", err))
 	}
+
+	Logger("Scanning folder ...")
 
 	// Get ALL messages.
 	seqset := new(imap.SeqSet)
@@ -82,7 +87,7 @@ func ScanMail() bool {
 		// Create a new mail reader
 		mr, err := mail.CreateReader(msg.GetBody(section))
 		if err != nil {
-			log.Fatal(err)
+			Logger(err.Error())
 		}
 
 		// Process each message's part
@@ -92,7 +97,7 @@ func ScanMail() bool {
 			if err == io.EOF {
 				break
 			} else if err != nil {
-				log.Fatal(err)
+				Logger(err.Error())
 			}
 
 			switch h := p.Header.(type) {
@@ -101,7 +106,7 @@ func ScanMail() bool {
 				InsertMail(config.MailFolder, msg.Uid)
 
 				filename, _ := h.Filename()
-				fmt.Println(fmt.Sprintf("Saving attachment: %s", filename))
+				Logger(fmt.Sprintf("Saving attachment: %s", filename))
 				b, _ := ioutil.ReadAll(p.Body)
 
 				attachmentFolder := config.AttachmentFolderPath
@@ -113,13 +118,15 @@ func ScanMail() bool {
 				err := ioutil.WriteFile(attachment, b, 0777)
 
 				if err != nil {
-					log.Println("Error while trying to save attachment: ", err)
+					Logger(err.Error())
 				}
-
-				fmt.Println(fmt.Sprintf("Attachment saved: %s", filename))
+				
+				Logger(fmt.Sprintf("Attachment saved: %s", filename))
 			}
 		}
 	}
+
+	Logger("Scan completed!")
 
 	return true
 }
