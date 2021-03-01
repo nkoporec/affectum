@@ -3,6 +3,7 @@ module github.com/nkoporec/affectum
 go 1.15
 
 require (
+	github.com/cratonica/2goarray v0.0.0-20190331194516-514510793eaa // indirect
 	github.com/emersion/go-imap v1.0.6
 	github.com/emersion/go-message v0.14.1
 	github.com/getlantern/systray v1.1.0 // indirect

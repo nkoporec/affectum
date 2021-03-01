@@ -4,7 +4,7 @@ import (
 	"time"
 	"github.com/nkoporec/affectum/utils"
 	"github.com/getlantern/systray"
-	"github.com/getlantern/systray/example/icon"
+	"github.com/nkoporec/affectum/icon"
 )
 
 func main() {
