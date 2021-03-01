@@ -1,95 +1,43 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"log"
-	"os"
-	"syscall"
 
 	"time"
 
 	"github.com/nkoporec/affectum/utils"
-	"github.com/sevlyar/go-daemon"
-)
 
-var (
-	signal = flag.String("s", "", `Send signal to the daemon:
-  stop — fast shutdown`)
-)
-
-var (
-	stop = make(chan struct{})
-	done = make(chan struct{})
+	"github.com/getlantern/systray"
+	"github.com/getlantern/systray/example/icon"
 )
 
 func main() {
-	flag.Parse()
-	daemon.AddCommand(daemon.StringFlag(signal, "stop"), syscall.SIGTERM, termHandler)
-
-	cntxt := &daemon.Context{
-		PidFileName: "affectum.pid",
-		PidFilePerm: 0644,
-		LogFileName: "affectum.log",
-		LogFilePerm: 0640,
-		WorkDir:     "./",
-		Umask:       027,
-		Args:        []string{"[go-daemon affectum]"},
+	// Start the systray.
+	onExit := func() {
+		fmt.Println("Stopped!")
 	}
-
-	if len(daemon.ActiveFlags()) > 0 {
-		d, err := cntxt.Search()
-		if err != nil {
-			log.Fatalf("Unable send signal to the daemon: %s", err.Error())
-		}
-		daemon.SendCommands(d)
-		return
-	}
-
-	fmt.Println("Affectum starting ...")
-	d, err := cntxt.Reborn()
-	if err != nil {
-		log.Fatal("Unable to run: ", err)
-	}
-	if d != nil {
-		return
-	}
-
-	defer cntxt.Release()
-
-	log.Print("- - - - - - - - - - - - - - -")
-	log.Print("affectum started")
-
-	go executeScanMailJob()
-
-	err = daemon.ServeSignals()
-	if err != nil {
-		log.Printf("Error: %s", err.Error())
-	}
-	log.Println("affectum terminated")
+	
+	systray.Run(onReady, onExit)
 }
 
 func executeScanMailJob() {
-LOOP:
 	for {
 		utils.ScanMail()
 		time.Sleep(60 * time.Second)
-		select {
-		case <-stop:
-			break LOOP
-		default:
-		}
 	}
-	done <- struct{}{}
 }
 
-func termHandler(sig os.Signal) error {
-	log.Println("terminating...")
+func onReady() {
+	systray.SetTemplateIcon(icon.Data, icon.Data)
+	systray.SetTitle("")
+	systray.SetTooltip("Affectum")
+	mQuitOrig := systray.AddMenuItem("Quit", "Quit the whole app")
 
-	stop <- struct{}{}
-	if sig == syscall.SIGQUIT {
-		<-done
-	}
+	go func() {
+		go executeScanMailJob()
 
-	return daemon.ErrStop
+		<-mQuitOrig.ClickedCh
+		fmt.Println("Requesting quit")
+		systray.Quit()
+	}()
 }
