@@ -1,0 +1,17 @@
+token
+bin/
+pkg/
+dist/
+vendor/
+.idea
+
+*.out
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+.DS_store%

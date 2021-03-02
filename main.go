@@ -2,9 +2,10 @@ package main
 
 import (
 	"time"
-	"github.com/nkoporec/affectum/utils"
+
 	"github.com/getlantern/systray"
 	"github.com/nkoporec/affectum/icon"
+	"github.com/nkoporec/affectum/utils"
 )
 
 func main() {
@@ -12,7 +13,7 @@ func main() {
 	onExit := func() {
 		utils.Logger("Affectum stopped!")
 	}
-	
+
 	systray.Run(onReady, onExit)
 }
 
@@ -24,7 +25,7 @@ func executeScanMailJob() {
 }
 
 func onReady() {
-	systray.SetTemplateIcon(icon.Data, icon.Data)
+	systray.SetIcon(icon.Base.Data)
 	systray.SetTitle("")
 	systray.SetTooltip("Affectum")
 	mQuitOrig := systray.AddMenuItem("Quit", "Quit the whole app")

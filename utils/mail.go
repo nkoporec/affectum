@@ -120,7 +120,7 @@ func ScanMail() bool {
 				if err != nil {
 					Logger(err.Error())
 				}
-				
+
 				Logger(fmt.Sprintf("Attachment saved: %s", filename))
 			}
 		}
