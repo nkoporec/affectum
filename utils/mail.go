@@ -36,10 +36,20 @@ func ScanMail() bool {
 
 	Logger("Connecting to server ...")
 
-	c, err := client.DialTLS(config.MailHost+":"+config.MailPort, nil)
-	if err != nil {
-		Logger(fmt.Sprintf("Can't connected to server, error is: %s", err))
-		log.Fatal()
+	var c *client.Client
+
+	if config.StartTls == "true" {
+		c, err = client.Dial(config.MailHost + ":" + config.MailPort)
+		if err != nil {
+			Logger(fmt.Sprintf("Can't connected to server, error is: %s", err))
+			log.Fatal()
+		}
+	} else {
+		c, err = client.DialTLS(config.MailHost+":"+config.MailPort, nil)
+		if err != nil {
+			Logger(fmt.Sprintf("Can't connected to server, error is: %s", err))
+			log.Fatal()
+		}
 	}
 
 	Logger("Connected")

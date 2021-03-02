@@ -11,6 +11,7 @@ type Config struct {
 	MailPassword         string `mapstructure:"MAIL_PASSWORD"`
 	MailFolder           string `mapstructure:"MAIL_FOLDER"`
 	AttachmentFolderPath string `mapstructure:"ATTACHMENT_FOLDER_PATH"`
+	StartTls             string `mapstructure:"STARTTLS"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

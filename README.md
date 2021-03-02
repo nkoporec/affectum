@@ -55,6 +55,10 @@ MAIL_FOLDER=
 # Full path to a folder where the attachments will be saved.
 # Defaults to ~/.affectum/files/
 ATTACHMENT_FOLDER_PATH=
+
+# Connect with STARTTLS.
+# Defaults to false.
+STARTTLS= false
 ```
 
 Make sure you have this file created, before running Affectum. If the file is not available or the configuration is not correct the application will not start.
