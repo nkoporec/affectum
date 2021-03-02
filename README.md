@@ -41,10 +41,12 @@ MAIL_HOST=
 MAIL_PORT=
 
 # Email username
+# eq: "user"
 MAIL_USERNAME=
 
 # Email password
-MAIL_PASSWORD= affectum
+# eq: "password"
+MAIL_PASSWORD=
 
 # Email folder
 # eq: "Bills"
