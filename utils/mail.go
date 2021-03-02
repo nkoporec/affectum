@@ -5,7 +5,6 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"os/user"
 	"path/filepath"
 
 	"github.com/emersion/go-message/mail"
@@ -16,11 +15,9 @@ import (
 )
 
 func ScanMail() bool {
-	usr, err := user.Current()
-
 	Logger("Loading config ...")
 
-	config, err := LoadConfig(usr.HomeDir)
+	config, err := LoadConfig(GetDir())
 	if err != nil {
 		Logger("Can't load config")
 		log.Fatal("")
@@ -109,12 +106,7 @@ func ScanMail() bool {
 				Logger(fmt.Sprintf("Saving attachment: %s", filename))
 				b, _ := ioutil.ReadAll(p.Body)
 
-				attachmentFolder := config.AttachmentFolderPath
-				if attachmentFolder == "" {
-					attachmentFolder = filepath.Join(usr.HomeDir, "/affectum/files")
-				}
-
-				attachment := filepath.Join(attachmentFolder, filename)
+				attachment := filepath.Join(GetAttachmentDir(), filename)
 				err := ioutil.WriteFile(attachment, b, 0777)
 
 				if err != nil {

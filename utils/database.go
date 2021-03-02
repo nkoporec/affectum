@@ -2,22 +2,15 @@ package utils
 
 import (
 	"database/sql"
-	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"os"
-	"os/user"
 	"path/filepath"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func GetDatabase() *sql.DB {
-	usr, err := user.Current()
-	if err != nil {
-		log.Fatal(fmt.Sprintf("Can't retrieve current user, error was: %s", err))
-	}
-
-	affectumDir := filepath.Join(usr.HomeDir, "/affectum")
-	database := filepath.Join(affectumDir, "affectum.sql")
+	database := filepath.Join(GetDir(), "affectum.sql")
 
 	sqliteDatabase, _ := sql.Open("sqlite3", database)
 
@@ -25,14 +18,7 @@ func GetDatabase() *sql.DB {
 }
 
 func SetupDatabase() bool {
-	usr, err := user.Current()
-	if err != nil {
-		log.Fatal(fmt.Sprintf("Can't retrieve current user, error was: %s", err))
-	}
-
-	// @todo: merge with CreateDir().
-	affectumDir := filepath.Join(usr.HomeDir, "/affectum")
-	database := filepath.Join(affectumDir, "affectum.sql")
+	database := filepath.Join(GetDir(), "affectum.sql")
 	if _, err := os.Stat(database); err != nil {
 		if os.IsNotExist(err) {
 			os.Create(database)

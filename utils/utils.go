@@ -15,7 +15,22 @@ func GetDir() string {
 		log.Fatal(fmt.Sprintf("Can't retrieve current user, error was: %s", err))
 	}
 
-	return filepath.Join(usr.HomeDir, "/affectum")
+	return filepath.Join(usr.HomeDir, ".affectum")
+}
+
+func GetAttachmentDir() string {
+	config, err := LoadConfig(GetDir())
+	if err != nil {
+		Logger("Can't load config")
+		log.Fatal("")
+	}
+
+	attachmentFolder := config.AttachmentFolderPath
+	if attachmentFolder == "" {
+		attachmentFolder = filepath.Join(GetDir(), "files")
+	}
+
+	return attachmentFolder
 }
 
 func CreateDir() {
@@ -25,6 +40,7 @@ func CreateDir() {
 		if os.IsNotExist(err) {
 			os.Mkdir(affectumDir, 0755)
 			os.Mkdir(filepath.Join(affectumDir, "files"), 0755)
+			os.Create(filepath.Join(affectumDir, "affectum.env"))
 			os.Create(filepath.Join(affectumDir, "affectum.log"))
 		}
 	}

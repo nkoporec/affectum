@@ -13,6 +13,6 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.6
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/sevlyar/go-daemon v0.1.5 // indirect
-	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966 // indirect
+	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/viper v1.7.1
 )
