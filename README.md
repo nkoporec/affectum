@@ -1,9 +1,8 @@
 # Affectum
 
-> Simple application to periodically save email attachments. You enter your mail configuration and set a folder, then affectum will scan that folder every minute and save any new mail attachments.
+![affectum](./assets/affectum.png)
 
-## Example
-![example](./assets/affectum-mac.png)
+> Simple application to periodically save email attachments. You enter your mail configuration and set a folder, then affectum will scan that folder every minute and save any new mail attachments.
 
 ## Install/run
 
