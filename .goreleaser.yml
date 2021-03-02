@@ -14,7 +14,7 @@ builds:
     hooks:
       pre:
        - cmd: make version={{.Version}} bundle-darwin
-       - cmd: mv bin/darwin/github-notify_{{.Version}}_darwin_x86_64.dmg dist/
+       - cmd: mv bin/darwin/affectum_{{.Version}}_darwin_x86_64.dmg dist/
     ldflags:
       - -s -w -X main.version={{.Version}}
 
@@ -32,8 +32,8 @@ builds:
     hooks:
       post:
        - cmd: make version={{.Version}} bundle-linux
-       - cmd: rm dist/linux_darwin_amd64/github-notify
-       - cmd: mv bin/linux/github-notify dist/linux_darwin_amd64
+       - cmd: rm dist/linux_darwin_amd64/affectum
+       - cmd: mv bin/linux/affectum dist/linux_darwin_amd64
 
   - id: windows
     env:
