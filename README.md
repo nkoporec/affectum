@@ -1,8 +1,14 @@
-# Affectum
+# Affectum ![Affectum](./assets/affectum.png)
 
-![affectum](./assets/affectum.png)
+> Simple application to periodically save email attachments.
 
-> Simple application to periodically save email attachments. You enter your mail configuration and set a folder, then affectum will scan that folder every minute and save any new mail attachments.
+## About
+
+Affectum is an application that will periodically scan your email folder and save any email attachments (files, images ...). On startup the application will scan the folder and save any existing attachments, then every minute a re-scan will occur and save any new attachments if found.
+
+This is useful if you don't want to manually save your attachments or if you want to automate your email workflow.
+
+It implements a local IMAP client which will connect to your email provider and scan your emails. It runs locally, so it's private, safe, and secure
 
 ## Install/run
 
@@ -20,6 +26,42 @@ Just run `affectum.exe`.
 go get github.com/nkoporec/affectum
 nohup affectum >/dev/null 2>&1 &
 ```
+
+## Configuration
+
+The configuration file is located at ~/.affectum/affectum.env
+
+```env
+# Email host
+# eq: imap.gmail.com
+MAIL_HOST=
+
+# Email port
+# eq: 993 (for gmail.com)
+MAIL_PORT=
+
+# Email username
+MAIL_USERNAME=
+
+# Email password
+MAIL_PASSWORD= affectum
+
+# Email folder
+# eq: "Bills"
+MAIL_FOLDER=
+
+# Full path to a folder where the attachments will be saved.
+# Defaults to ~/.affectum/files/
+ATTACHMENT_FOLDER_PATH=
+```
+
+Make sure you have this file created, before running Affectum. If the file is not available or the configuration is not correct the application will not start.
+
+### Debugging
+
+If for some reason the Affectum is not working, please check the log located at ~/.affectum/affectum.log and see if there are any errors.
+
+## Local development
 
 ### Build command
 
@@ -43,6 +85,6 @@ Affectum icon is part of [Streamline](https://streamlinehq.com) icon pack.
 
 ## License ##
 
-Copyright (c) 2021 nkoporec
+Copyright (c) 2021 nkoporec <br>
 Licensed under the MIT license.
 
